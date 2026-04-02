@@ -1,3 +1,8 @@
+# Autores: 
+# 1 -> Arthur Romano Massaro
+# 2 -> Pedro Miguel Lorin 
+# 3 -> Paulo Uejima Varella
+
 class No: 
     def __init__(self, valor:str):
         self.valor = valor
