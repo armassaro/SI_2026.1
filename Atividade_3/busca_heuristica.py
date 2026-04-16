@@ -19,13 +19,13 @@ class Tabuleiro:
                                        [7,0,5]]) if tabuleiro == None else tabuleiro
         self.heuristica:int = self.calcula_heuristica()
         self.posicao_zero:list[int] = [2, 1]
-        self.caminhos_possiveis:list[int] = self.retorna_caminhos()
+        self.caminhos_possiveis:list[Mov] = self.retorna_caminhos()
         
     def calcula_heuristica(self) -> int:
         heuristica = 0
-        for idx_linha, linha in enumerate(self.tabuleiro): 
-            for idx_num, num in enumerate(linha):
-                if num == tabuleiro_alvo[idx_linha][idx_num]:
+        for i in range(len(self.tabuleiro)):
+            for j in range(len(self.tabuleiro[i])):
+                if self.tabuleiro[i][j] == tabuleiro_alvo[i][j]:
                     heuristica += 1
         return heuristica
     
@@ -86,9 +86,35 @@ class Tabuleiro:
         print(self.tabuleiro[1].__str__())
         print(self.tabuleiro[2].__str__())
 
-tabuleiro = Tabuleiro()
+class Estado:
+    def __init__(self, tabuleiro: Tabuleiro, direcao:Mov=None):
+        self.tabuleiro = tabuleiro
+        self.heuristica = tabuleiro.heuristica
+        self.direcao = direcao
+        self.proximos_estados = self.get_proximos_estados()
+    
+    def get_proximos_estados(self):
+        proximos_estados:list[Estado] = []
+        # Cria novos estados simulando os movimentos a partir do tabuleiro atual
+        for caminho in self.tabuleiro.caminhos_possiveis:
+            novo_tabuleiro = Tabuleiro([linha[:] for linha in self.tabuleiro.tabuleiro])
+            novo_estado:Estado = Estado(tabuleiro=novo_tabuleiro, direcao=caminho)
+            novo_estado.tabuleiro.move_peca(caminho)
+            proximos_estados.append(novo_estado)
+        return proximos_estados
 
-tabuleiro.print_tabuleiro()
-print()
-tabuleiro.move_peca(Mov.CIMA)
-tabuleiro.print_tabuleiro()
+# Algoritmo de hill climbing
+def hill_climbing(estado:Estado) -> Estado:
+    iteracoes.append(estado.direcao)
+    if(estado.tabuleiro.heuristica < 9):
+        [heuristica, idx] = [0, 0]
+        for i, estado_alvo in estado.proximos_estados:
+            if estado_alvo.heuristica > heuristica:
+                [heuristica, idx] = [estado_alvo.heuristica, i]
+        
+        hill_climbing(estado.proximos_estados[idx])
+    return estado
+
+estado_atual = Estado(tabuleiro=Tabuleiro(), direcao=None)
+
+hill_climbing(estado_atual)
